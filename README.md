@@ -48,3 +48,9 @@ Just enter this:
 ```bash
 deactivate
 ```
+
+## Install requirements
+
+```bash
+pip install -r requirements.txt
+```
