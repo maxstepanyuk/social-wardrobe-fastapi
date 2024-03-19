@@ -9,7 +9,7 @@ Contact me or see what I'm up to - [linktree](https://linktr.ee/purpexe)
 
 # FastAPI
 
-
+...
 
 ## Python and virtual environments on Debian 12
 
@@ -31,3 +31,20 @@ python3 -m venv /the_path/the_environment_name
 ```
 
 `env` - name on the virtual environment
+
+**How to activate and deactivate**
+
+activate:
+
+```bash
+source the_environment_name/bin/activate
+# source env/bin/activate # in my case
+```
+
+dactivate:
+
+Just enter this:
+
+```bash
+deactivate
+```
