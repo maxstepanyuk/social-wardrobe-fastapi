@@ -9,8 +9,6 @@ Contact me or see what I'm up to - [linktree](https://linktr.ee/purpexe)
 
 # FastAPI
 
-...
-
 ## Python and virtual environments on Debian 12
 
 **Install**
@@ -54,3 +52,9 @@ deactivate
 ```bash
 pip install -r requirements.txt
 ```
+
+## Run
+
+```bash
+uvicorn main:app #in file "main.py" run "app"
+``` 
