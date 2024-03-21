@@ -9,6 +9,8 @@ Contact me or see what I'm up to - [linktree](https://linktr.ee/purpexe)
 
 # FastAPI
 
+[Swagger documentation `http://127.0.0.1:8000/docs`](http://127.0.0.1:8000/docs)
+
 ## Python and virtual environments on Debian 12
 
 **Install**
@@ -35,11 +37,11 @@ python3 -m venv /the_path/the_environment_name
 activate:
 
 ```bash
-source the_environment_name/bin/activate
-# source env/bin/activate # in my case
+# source the_environment_name/bin/activate
+source env/bin/activate # in my case
 ```
 
-dactivate:
+deactivate:
 
 Just enter this:
 
@@ -56,5 +58,11 @@ pip install -r requirements.txt
 ## Run
 
 ```bash
-uvicorn main:app #in file "main.py" run "app"
-``` 
+uvicorn main:app --port=8000 --reload
+```
+
+`main:app` - in file "main.py" run "app". 
+
+`--port=8000` - use port 8000. 
+
+`--reload` - reload server on file update
