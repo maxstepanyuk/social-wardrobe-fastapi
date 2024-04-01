@@ -11,6 +11,10 @@ Contact me or see what I'm up to - [linktree](https://linktr.ee/purpexe)
 
 [Swagger documentation `http://127.0.0.1:8000/docs`](http://127.0.0.1:8000/docs)
 
+[Redoc documentation `http://127.0.0.1:8000/redoc`](http://127.0.0.1:8000/redoc)
+
+[OpenAPI and JSON Schema `http://127.0.0.1:8000/openapi.json`](http://127.0.0.1:8000/openapi.json)
+
 ## Python and virtual environments on Debian 12
 
 **Install**
@@ -26,8 +30,8 @@ After installing the python3-venv package, recreate your virtual environment.
 **Create**
 
 ```bash
-python3 -m venv /the_path/the_environment_name
-# python3 -m venv env # in my case
+# python3 -m venv /the_path/the_environment_name
+python3 -m venv env # in my case
 ```
 
 `env` - name on the virtual environment
