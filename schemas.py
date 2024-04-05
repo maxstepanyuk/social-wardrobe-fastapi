@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 # base models
 
@@ -9,5 +9,5 @@ class UserBase(BaseModel):
 
 class ItemBase(BaseModel):
     name: str
-    description: str
+    description: Optional[str] = None  # Nullable string
     user_id: int
