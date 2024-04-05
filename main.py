@@ -1,101 +1,101 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends 
 from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session
 
-# Create the FastAPI instance
-app = FastAPI()
+app = FastAPI() # Create the FastAPI instance
 
-# Database connection
-# SQLALCHEMY_DATABASE_URL = "postgresql://fastapi_user:fastapi_user_password@127.0.0.1:5432/wardrobe_fastapi" # TODO
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@127.0.0.1:5432/wardrobe_fastapi"
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+from database import engine, SessionLocal # from my files
 
-# SQLAlchemy Base
-Base = declarative_base()
+import models # from my files
+models.Base.metadata.create_all(bind=engine) # Create the tables
 
-# Define your database models
-class Item(Base):
-    __tablename__ = "items"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    description = Column(String, index=True)
+# get db then close the connection
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-# Create the tables
-Base.metadata.create_all(bind=engine)
+from typing import Annotated
 
-user_list = [
-    {"id": 1, "user":"adam"},
-    {"id": 2, "user":"bill"},
-    {"id": 3, "user":"kate"},
-]
+db_dependancy = Annotated[Session, Depends(get_db)] # dependancy injection
+
 
 # FastAPI routes
 
+import schemas # from my files
+
 @app.post("/items/")
-def create_item(name: str, description: str):
-    db = SessionLocal()
-    item = Item(name=name, description=description)
+async def create_item(item_in: schemas.ItemBase, db: db_dependancy):
+    item = models.Item(**item_in.dict())
     db.add(item)
     db.commit()
     db.refresh(item)
     return item
 
 @app.get("/items/{item_id}")
-def read_item(item_id: int):
-    db = SessionLocal()
-    item = db.query(Item).filter(Item.id == item_id).first()
-    if item is None:
+async def read_item(item_id: int, db: db_dependancy):
+    try:
+        item = db.query(models.Item).filter(models.Item.id == item_id).one()
+        return item
+    except NoResultFound:
         raise HTTPException(status_code=404, detail="Item not found")
-    return item
-
 
 @app.get("/")
 async def root():
-    return {"message":"hello world"}
+    return {"message":"hello world", "openapi swagger":"http://127.0.0.1:8000/docs"}
 
 @app.get("/users")
-async def list_users():
-    # return {"message": "list users route"}
+async def list_users(db: db_dependancy):
+    user_list = db.query(models.User).all()
     return user_list
 
-@app.get("/users/me")
-async def get_current_user():
-    return {"Message": "this is the current user"}
+# @app.get("/users/me") # TODO
+# async def get_current_user():
+#     return {"Message": "this is the current user"}
 
 @app.get("/users/{user_id}")
-async def get_user(user_id: int):
-    # return {"user_id": user_id}
-    for user in user_list:
-        if user["id"] == user_id:
-            return user
-    raise HTTPException(status_code=404, detail="User not found")
+async def get_user(user_id: int, db: db_dependancy):
+    try:
+        user = db.query(models.User).filter(models.User.id == user_id).one()
+        return user
+    except NoResultFound:
+        raise HTTPException(status_code=404, detail="User not found")
 
-
-@app.post("/users")
-async def create_user(user: dict):
-    # Generate a new user ID
-    new_user_id = max(user["id"] for user in user_list) + 1
-    user["id"] = new_user_id
-    user_list.append(user)
+@app.post("/users/")
+async def create_user(user_in: schemas.UserBase, db: db_dependancy):
+    user = models.User(**user_in.dict())
+    db.add(user)
+    db.commit()
+    db.refresh(user)
     return user
 
+def update_object_attributes(user_in, user):
+    for attr, value in user_in.dict().items():
+        setattr(user, attr, value)
 
 @app.put("/users/{user_id}")
-async def update_user(user_id: int, updated_user: dict):
-    for user in user_list:
-        if user["id"] == user_id:
-            user.update(updated_user)
-            return user
-    raise HTTPException(status_code=404, detail="User not found")
+async def update_user(user_id: int, user_in: schemas.UserBase, db: db_dependancy):
+    try:
+        user = db.query(models.User).filter(models.User.id == user_id).one()
+        update_object_attributes(user_in, user)
+        db.commit()
+        db.refresh(user)
+        return user
+    except NoResultFound:
+        raise HTTPException(status_code=404, detail="User not found")
 
 
 @app.delete("/users/{user_id}")
-async def delete_user(user_id: int):
-    for index, user in enumerate(user_list):
-        if user["id"] == user_id:
-            del user_list[index]
-            return {"message": "User deleted successfully"}
-    raise HTTPException(status_code=404, detail="User not found")
+def delete_user(user_id: int, db: db_dependancy):
+    try:
+        user = db.query(models.User).filter(models.User.id == user_id).one()
+        db.delete(user)
+        db.commit()
+        return {"message": "User deleted successfully"}
+    except NoResultFound:
+        raise HTTPException(status_code=404, detail="User not found")
