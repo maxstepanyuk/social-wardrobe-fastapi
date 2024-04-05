@@ -63,6 +63,7 @@ pip install -r requirements.txt
 
 ```bash
 uvicorn main:app --port=8000 --reload
+# uvicorn main:app --host 0.0.0.0 --port 8000 --reload # you can also open to a local network
 ```
 
 `main:app` - in file "main.py" run "app". 
