@@ -1,13 +1,12 @@
-from pydantic import BaseModel
-from typing import List, Optional
+from pydantic import BaseModel, constr
+from typing import List, Optional, Union
 
 # base models
 
 class UserBase(BaseModel):
-    user: str
-    # items: List[ItemBase]
+    user: constr(min_length=1)
 
 class ItemBase(BaseModel):
-    name: str
-    description: Optional[str] = None  # Nullable string
-    user_id: int
+    name: constr(min_length=1)
+    description: Optional[Union[constr(min_length=1), None]] = None
+    user_id: Optional[int] = None
