@@ -29,6 +29,14 @@ db_dependancy = Annotated[Session, Depends(get_db)] # dependancy injection
 
 import schemas # from my files
 
+def update_object_attributes(user_in, user): # TODO: move to a seperate file?
+    for attr, value in user_in.dict().items():
+        setattr(user, attr, value)
+
+@app.get("/")
+async def root():
+    return {"message":"hello world", "openapi swagger":"http://127.0.0.1:8000/docs"}
+
 @app.post("/items/")
 async def create_item(item_in: schemas.ItemBase, db: db_dependancy):
     item = models.Item(**item_in.dict())
@@ -44,10 +52,6 @@ async def read_item(item_id: int, db: db_dependancy):
         return item
     except NoResultFound:
         raise HTTPException(status_code=404, detail="Item not found")
-
-@app.get("/")
-async def root():
-    return {"message":"hello world", "openapi swagger":"http://127.0.0.1:8000/docs"}
 
 @app.get("/users")
 async def list_users(db: db_dependancy):
@@ -73,10 +77,6 @@ async def create_user(user_in: schemas.UserBase, db: db_dependancy):
     db.commit()
     db.refresh(user)
     return user
-
-def update_object_attributes(user_in, user):
-    for attr, value in user_in.dict().items():
-        setattr(user, attr, value)
 
 @app.put("/users/{user_id}")
 async def update_user(user_id: int, user_in: schemas.UserBase, db: db_dependancy):
