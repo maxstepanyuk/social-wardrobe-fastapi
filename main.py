@@ -4,7 +4,12 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 
-app = FastAPI() # Create the FastAPI instance
+app = FastAPI(
+    title="Wardrobe FastAPI",
+    description="by Maksym Stepanuik for Uni",
+    version="0.0.1",
+    docs_url="/docs"
+) # Create the FastAPI instance
 
 from database import engine, SessionLocal # from my files
 
