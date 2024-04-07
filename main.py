@@ -53,6 +53,14 @@ async def read_item(item_id: int, db: db_dependancy):
     except NoResultFound:
         raise HTTPException(status_code=404, detail="Item not found")
 
+@app.post("/users/")
+async def create_user(user_in: schemas.UserBase, db: db_dependancy):
+    user = models.User(**user_in.dict())
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
 @app.get("/users")
 async def list_users(db: db_dependancy):
     user_list = db.query(models.User).all()
@@ -69,14 +77,6 @@ async def get_user(user_id: int, db: db_dependancy):
         return user
     except NoResultFound:
         raise HTTPException(status_code=404, detail="User not found")
-
-@app.post("/users/")
-async def create_user(user_in: schemas.UserBase, db: db_dependancy):
-    user = models.User(**user_in.dict())
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
 
 @app.put("/users/{user_id}")
 async def update_user(user_id: int, user_in: schemas.UserBase, db: db_dependancy):
