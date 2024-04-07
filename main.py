@@ -27,14 +27,14 @@ def get_db():
 
 from typing import Annotated
 
-db_dependancy = Annotated[Session, Depends(get_db)] # dependancy injection
+db_dependency = Annotated[Session, Depends(get_db)] # dependency injection
 
 
 # FastAPI routes
 
 import schemas # from my files
 
-def update_object_attributes(user_in, user): # TODO: move to a seperate file?
+def update_object_attributes(user_in, user): # TODO: move to a separate file?
     for attr, value in user_in.dict().items():
         setattr(user, attr, value)
 
@@ -43,7 +43,7 @@ async def root():
     return {"message":"hello world", "openapi swagger":"http://127.0.0.1:8000/docs"}
 
 @app.post("/items/")
-async def create_item(item_in: schemas.ItemBase, db: db_dependancy):
+async def create_item(item_in: schemas.ItemBase, db: db_dependency):
     item = models.Item(**item_in.dict())
     db.add(item)
     db.commit()
@@ -51,7 +51,7 @@ async def create_item(item_in: schemas.ItemBase, db: db_dependancy):
     return item
 
 @app.get("/items/{item_id}")
-async def read_item(item_id: int, db: db_dependancy):
+async def read_item(item_id: int, db: db_dependency):
     try:
         item = db.query(models.Item).filter(models.Item.id == item_id).one()
         return item
@@ -59,7 +59,7 @@ async def read_item(item_id: int, db: db_dependancy):
         raise HTTPException(status_code=404, detail="Item not found")
 
 @app.post("/users/")
-async def create_user(user_in: schemas.UserBase, db: db_dependancy):
+async def create_user(user_in: schemas.UserBase, db: db_dependency):
     user = models.User(**user_in.dict())
     db.add(user)
     db.commit()
@@ -67,7 +67,7 @@ async def create_user(user_in: schemas.UserBase, db: db_dependancy):
     return user
 
 @app.get("/users")
-async def list_users(db: db_dependancy):
+async def list_users(db: db_dependency):
     user_list = db.query(models.User).all()
     return user_list
 
@@ -76,7 +76,7 @@ async def list_users(db: db_dependancy):
 #     return {"Message": "this is the current user"}
 
 @app.get("/users/{user_id}")
-async def get_user(user_id: int, db: db_dependancy):
+async def get_user(user_id: int, db: db_dependency):
     try:
         user = db.query(models.User).filter(models.User.id == user_id).one()
         return user
@@ -84,7 +84,7 @@ async def get_user(user_id: int, db: db_dependancy):
         raise HTTPException(status_code=404, detail="User not found")
 
 @app.put("/users/{user_id}")
-async def update_user(user_id: int, user_in: schemas.UserBase, db: db_dependancy):
+async def update_user(user_id: int, user_in: schemas.UserBase, db: db_dependency):
     try:
         user = db.query(models.User).filter(models.User.id == user_id).one()
         update_object_attributes(user_in, user)
@@ -96,7 +96,7 @@ async def update_user(user_id: int, user_in: schemas.UserBase, db: db_dependancy
 
 
 @app.delete("/users/{user_id}")
-def delete_user(user_id: int, db: db_dependancy):
+def delete_user(user_id: int, db: db_dependency):
     try:
         user = db.query(models.User).filter(models.User.id == user_id).one()
         db.delete(user)
