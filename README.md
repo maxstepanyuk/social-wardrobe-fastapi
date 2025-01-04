@@ -42,9 +42,9 @@ activate:
 source .venv/bin/activate
 ```
 
-deactivate:
+*run python code at this stage* 
 
-Just enter this:
+deactivate (just by entering this):
 
 ```bash
 deactivate
