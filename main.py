@@ -50,6 +50,11 @@ async def create_item(item_in: schemas.ItemBase, db: db_dependency):
     db.refresh(item)
     return item
 
+@app.get("/items")
+async def list_items(db: db_dependency):
+    item_list = db.query(models.Item).all()
+    return item_list
+
 @app.get("/items/{item_id}")
 async def read_item(item_id: int, db: db_dependency):
     try:
