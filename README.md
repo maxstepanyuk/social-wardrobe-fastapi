@@ -23,15 +23,13 @@ On Debian/Ubuntu systems, you need to install the python3-venv package using the
 
 ```bash
 sudo apt install python3-venv
-# sudo apt install python3.11-venv # in my case
 ```
 After installing the python3-venv package, recreate your virtual environment.
 
 **Create**
 
 ```bash
-# python3 -m venv /the_path/the_environment_name
-python3 -m venv env # in my case
+python3 -m venv .venv
 ```
 
 `env` - name on the virtual environment
@@ -41,8 +39,7 @@ python3 -m venv env # in my case
 activate:
 
 ```bash
-# source the_environment_name/bin/activate
-source env/bin/activate # in my case
+source .venv/bin/activate
 ```
 
 deactivate:
